@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import styled from 'styled-components';
 import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm/ContactForm';
@@ -46,17 +46,27 @@ class App extends Component {
       contacts: prev.contacts.filter(el => el.id !== id),
     }));
   };
-
   handleSearchChange = e => {
     this.setState({ filter: e.target.value });
   };
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsContacts = JSON.parse(contacts);
+    if (parsContacts) {
+      this.setState({ contacts: parsContacts });
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   render() {
     const { contacts, filter } = this.state;
     const filteredContacts = contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
-
     return (
       <Container>
         <h1>Phonebook</h1>
